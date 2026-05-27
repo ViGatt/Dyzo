@@ -4,7 +4,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(__dirname));
 
 const apiKey = process.env.MINHA_CHAVE_IA;
 const genAI = new GoogleGenerativeAI(apiKey);
