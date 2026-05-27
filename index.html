@@ -517,8 +517,8 @@
                 
             } catch (erro) {
                 console.error(erro);
-                // Mensagem mais clara indicando que é só esperar um pouquinho
-                document.getElementById('res').innerText = "Vixe, muita gente enviando ao mesmo tempo! Aguarde 10 segundinhos e tente de novo. 🔥";
+                // Agora o site vai mostrar o erro exato que o backend mandar!
+                document.getElementById('res').innerText = erro.message || "Erro desconhecido. Verifique o console.";
             } finally {
                 // 2. LIBERA O BOTÃO: Independente se deu erro ou sucesso, o botão volta ao normal
                 botaoRef.disabled = false;
