@@ -4,7 +4,6 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-// Pegando a sua chave que estará configurada na Vercel
 const apiKey = process.env.MINHA_CHAVE_IA;
 
 app.post('/api/correio', async (req, res) => {
@@ -23,18 +22,17 @@ app.post('/api/correio', async (req, res) => {
     - Responda apenas com a mensagem final, sem aspas ou introduções.`;
 
     try {
-        // Fazendo a chamada direta para o endpoint do OpenRouter
         const respostaOpenRouter = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://vercel.com", // Opcional (ajuda no ranking do OpenRouter)
-                "X-Title": "Dyzo Elegante"          // Opcional
+                "HTTP-Referer": "https://festadyzo.com", // Ajuda a evitar bloqueios
+                "X-Title": "Dyzo Elegante"
             },
             body: JSON.stringify({
-                // Usando o Llama 3 8B Gratuito (Excelente para tarefas rápidas e criativas)
-                model: "meta-llama/llama-3-8b-instruct:free", 
+                // TROCAMOS O MODELO: Este modelo gratuito da Mistral é super rápido e raramente congestiona
+                model: "mistralai/mistral-7b-instruct:free", 
                 messages: [
                     { role: "user", content: prompt }
                 ],
@@ -44,23 +42,23 @@ app.post('/api/correio', async (req, res) => {
 
         const dados = await respostaOpenRouter.json();
 
+        // SE O OPENROUTER NEGAR, VAMOS MANDAR O ERRO REAL PARA A TELA DO CELULAR
         if (!respostaOpenRouter.ok) {
-            console.error("Erro retornado pelo OpenRouter:", dados);
-            throw new Error("Falha na comunicação com OpenRouter");
+            console.error("Erro OpenRouter:", dados);
+            // Captura o erro exato (ex: 401 Unauthorized, 429 Rate Limit)
+            const erroReal = dados.error?.message || `Erro código ${respostaOpenRouter.status}`;
+            return res.status(500).json({ erro: `ERRO DO OPENROUTER: ${erroReal}` });
         }
 
-        // Extraindo o texto gerado pelo modelo do OpenRouter
         const textoGerado = dados.choices[0].message.content.trim();
-
         res.json({ mensagem: textoGerado });
         
     } catch (erro) {
-        console.error(erro);
-        res.status(500).json({ erro: "Eita, deu problema na fogueira!" });
+        console.error("Erro no servidor da Vercel:", erro);
+        res.status(500).json({ erro: "Erro interno do servidor Node.js. Verifique os logs da Vercel." });
     }
 });
 
-// Trava de segurança para ambiente local vs produção (Vercel)
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
