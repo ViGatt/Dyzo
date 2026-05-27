@@ -1,12 +1,11 @@
 require('dotenv').config();
 const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 app.use(express.json());
 
+// Pegando a sua chave que estará configurada na Vercel
 const apiKey = process.env.MINHA_CHAVE_IA;
-const genAI = new GoogleGenerativeAI(apiKey);
 
 app.post('/api/correio', async (req, res) => {
     let de = req.body.de;
@@ -24,15 +23,34 @@ app.post('/api/correio', async (req, res) => {
     - Responda apenas com a mensagem final, sem aspas ou introduções.`;
 
     try {
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-3.5-flash",
-            generationConfig: {
-                temperature: 0.9, 
-            }
+        // Fazendo a chamada direta para o endpoint do OpenRouter
+        const respostaOpenRouter = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://vercel.com", // Opcional (ajuda no ranking do OpenRouter)
+                "X-Title": "Dyzo Elegante"          // Opcional
+            },
+            body: JSON.stringify({
+                // Usando o Llama 3 8B Gratuito (Excelente para tarefas rápidas e criativas)
+                model: "meta-llama/llama-3-8b-instruct:free", 
+                messages: [
+                    { role: "user", content: prompt }
+                ],
+                temperature: 0.9
+            })
         });
-        
-        const resultado = await model.generateContent(prompt);
-        const textoGerado = resultado.response.text();
+
+        const dados = await respostaOpenRouter.json();
+
+        if (!respostaOpenRouter.ok) {
+            console.error("Erro retornado pelo OpenRouter:", dados);
+            throw new Error("Falha na comunicação com OpenRouter");
+        }
+
+        // Extraindo o texto gerado pelo modelo do OpenRouter
+        const textoGerado = dados.choices[0].message.content.trim();
 
         res.json({ mensagem: textoGerado });
         
@@ -41,6 +59,8 @@ app.post('/api/correio', async (req, res) => {
         res.status(500).json({ erro: "Eita, deu problema na fogueira!" });
     }
 });
+
+// Trava de segurança para ambiente local vs produção (Vercel)
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
@@ -48,5 +68,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// A linha que a Vercel precisa para ler o seu backend
 module.exports = app;
