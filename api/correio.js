@@ -32,7 +32,7 @@ app.post('/api/correio', async (req, res) => {
             },
             body: JSON.stringify({
                 // TROCAMOS O MODELO: Este modelo gratuito da Mistral é super rápido e raramente congestiona
-                model: "mistralai/mistral-7b-instruct:free", 
+                model: "meta-llama/llama-3-8b-instruct:free",
                 messages: [
                     { role: "user", content: prompt }
                 ],
