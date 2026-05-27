@@ -486,13 +486,18 @@
             let de = document.getElementById('de').value || "Anônimo";
             let para = document.getElementById('para').value;
             let tom = document.getElementById('tom').value;
+            const botaoRef = document.getElementById('btn');
             
             if(!para) {
                 alert("Opa, faltou dizer pra quem é sô!");
                 return;
             }
 
-            document.getElementById('res').innerText = "Escrevendo no capricho...";
+            // 1. TRAVA DE SEGURANÇA: Desativa o botão para evitar spam de cliques
+            botaoRef.disabled = true;
+            botaoRef.innerText = "Escrevendo no capricho... ⏳";
+            botaoRef.style.opacity = "0.7";
+            document.getElementById('res').innerText = "";
             
             try {
                 let resposta = await fetch('/api/correio', {
@@ -507,13 +512,18 @@
                     throw new Error(dados.erro);
                 }
 
-                document.getElementById('res').innerText = ""; 
                 document.getElementById('msg').innerHTML = `Para: <strong>${para}</strong><br>De: <strong>${de}</strong><br><br>${dados.mensagem}`;
                 pop.style.display = 'flex';
                 
             } catch (erro) {
                 console.error(erro);
-                document.getElementById('res').innerText = "Eita, deu problema na fogueira. Tente de novo!";
+                // Mensagem mais clara indicando que é só esperar um pouquinho
+                document.getElementById('res').innerText = "Vixe, muita gente enviando ao mesmo tempo! Aguarde 10 segundinhos e tente de novo. 🔥";
+            } finally {
+                // 2. LIBERA O BOTÃO: Independente se deu erro ou sucesso, o botão volta ao normal
+                botaoRef.disabled = false;
+                botaoRef.innerText = "Enviar Correio";
+                botaoRef.style.opacity = "1";
             }
         }
 
