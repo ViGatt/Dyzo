@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dyzo Elegante</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    
+    <style>
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden; 
+        }
+
+        body { 
+            font-family: sans-serif; 
+            background-color: #F9D6EA;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.5) 20px, rgba(255,255,255,0.5) 40px);
+            text-align: center; 
+            padding: 20px; 
+            margin: 0;
+            
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* --- ESTILO PARA O TÍTULO EM IMAGEM --- */
+        .titulo-imagem {
+            width: 100%;
+            max-width: 260px; 
+            height: auto;
+            display: block;
+            margin: 0 auto 20px auto; 
+
+        }
+
+        /* --- VARAL DE BANDEIRINHAS NO TOPO --- */
+        #varal-bandeirinhas {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 38px; 
+            display: flex;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 10; 
+        }
+
+        .bandeirinha-topo {
+            flex: 1;
+            height: 100%;
+            
+            
+            /* TRUQUE DO CLIP-PATH: Recorta o elemento em formato de triângulo junino */
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            
+            /* Dá uma leve profundidade individual para cada bandeirinha */
+            filter: brightness(0.95); 
+        }
+
+        /* --- ESTILOS PARA AS DECORAÇÕES ESPALHADAS (pelo JS) --- */
+        .decoracao {
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.8; 
+            z-index: 10; 
+            pointer-events: none; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
+            transition: transform 0.5s ease-out; 
+        }
+        
+        /* --- GRUPO DA LOGO E CAIPIRINHAS --- */
+        .grupo-logo {
+            position: relative;
+            width: 120px; 
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logo-circulo {
+            width: 120px;      
+            height: 120px;     
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 3px solid #b80606; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+            
+            position: relative;
+            z-index: 5; 
+            background-color: white; 
+        }
+
+        .icone-caipira {
+            position: absolute;
+            width: 75px; 
+            top: 25px; 
+            z-index: 1; 
+            transition: transform 0.3s ease;
+        }
+
+        /* O caipira espia pela esquerda */
+        .icone-esq {
+            left: -55px; 
+            transform: rotate(-25deg);
+        }
+
+        /* A caipira espia pela direita */
+        .icone-dir {
+            right: -55px;
+            transform: rotate(25deg);
+        }
+
+        
+        #box { 
+            background: #fef3d9;
+            padding: 20px; 
+            border-radius: 15px; 
+            width: 100%;
+            max-width: 400px; 
+            border: 3px dashed #DF4C52; 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+            margin-top: 30px; 
+            position: relative; 
+            z-index: 20;
+        }
+
+        /* --- ATUALIZAÇÃO NO SEU #BOX --- */
+        #box {
+            position: relative;
+            overflow: hidden;
+            background-color: #fff8e1;
+            
+            background-image: linear-gradient(90deg, rgba(140, 3, 3, 0.03) 1px, transparent 1px),
+                              linear-gradient(rgba(140, 3, 3, 0.03) 1px, transparent 1px);
+            background-size: 10px 10px;
+            
+        }
+
+        #box > *:not(.retalho) {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- OS NOVOS RETALHOS COM RELEVO --- */
+        .retalho {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            
+            border: 1.8px dashed rgba(255, 255, 255, 0.85); 
+            
+            filter: drop-shadow(2px 3px 3px rgba(0, 0, 0, 0.15));
+            border-radius: 4px;
+            
+            opacity: 0.38; 
+            
+            animation: balancarRetalho 6s ease-in-out infinite alternate;
+        }
+
+        /* --- ESTAMPAS TIPICAMENTE JUNINAS (Usando sua paleta) --- */
+        .textura-xadrez {
+            background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.12) 50%, transparent 50%),
+                              linear-gradient(rgba(0, 0, 0, 0.12) 50%, transparent 50%);
+            background-size: 16px 16px;
+        }
+
+        .textura-listrada {
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent);
+            background-size: 12px 12px;
+        }
+
+        .textura-poa {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.4) 20%, transparent 21%);
+            background-size: 12px 12px;
+        }
+
+        @keyframes balancarRetalho {
+            0% { transform: translate(0, 0) rotate(var(--rot-inicial)); }
+            100% { transform: translate(4px, -3px) rotate(calc(var(--rot-inicial) + 4deg)); }
+        }
+        
+        h2 { color: #DF4C52; font-size: 26px; margin-top: 5px; }
+        .row { margin-bottom: 15px; text-align: left; color: #5d4037; font-weight: bold; }
+        
+        input, select { 
+            width: 100%; padding: 10px; margin-top: 5px; 
+            border-radius: 8px; border: 2px solid #ff2525; 
+            background: #fff; box-sizing: border-box; font-size: 16px;
+        }
+        
+        button { 
+            background: #DF4C52; color: white; border: none; 
+            padding: 15px; width: 100%; border-radius: 8px; 
+            font-size: 18px; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 4px 0 #b33e42;
+            margin-bottom: 10px;
+        }
+        
+        button:active, .btn-insta:active { 
+            transform: translateY(4px); box-shadow: none; 
+        }
+
+        .btn-insta {
+            display: block;
+            background: linear-gradient(45deg, #DF4C52, #FBCEE5, #dc2743, #cc2366, #bc1888);
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #9b1470;
+            box-sizing: border-box;
+            transition: transform 0.1s;
+        }
+
+        #res { margin-top: 20px; font-weight: bold; color: #9C1D26; }
+        .bandeiras-title { font-size: 28px; letter-spacing: 5px; margin-bottom: -10px; }
+
+        /* --- ESTILOS DO POP-UP (Cartinha) --- */
+        #pop {
+            display: none; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); 
+            align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+
+        .crt {
+            background: #ffc6b3; 
+            padding: 40px 20px;
+            width: 85%; max-width: 320px;
+            border-radius: 5px;
+            border: 2px dashed #ff1500;
+            box-shadow: 5px 10px 20px rgba(0,0,0,0.5);
+            transform: rotate(-3deg); 
+            position: relative;
+            text-align: center;
+        }
+
+        .x {
+            position: absolute; top: 10px; right: 15px;
+            cursor: pointer; font-size: 22px; font-weight: bold; color: #d81515;
+        }
+
+        .tit { color: #d81515; font-size: 20px; margin-top: 0; margin-bottom: 20px; }
+
+        #msg {
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 20px; color: #4e342e; font-weight: bold;
+            line-height: 1.4;
+        }
+            /* --- ESTILO E ANIMAÇÃO DOS BALÕES VOADORES --- */
+        .balao-voador {
+            position: fixed; 
+            bottom: -150px; 
+            z-index: 2; 
+            pointer-events: none; 
+            opacity: 0.6; 
+            
+           
+            animation: flutuar linear infinite; 
+        }
+
+        @keyframes flutuar {
+            0% { 
+                transform: translateY(0) translateX(0) rotate(-10deg); 
+                opacity: 0;
+            }
+            10% { 
+                opacity: 0.6; 
+            }
+            90% { 
+                opacity: 0.6; 
+            }
+            100% { 
+                transform: translateY(-110vh) translateX(30px) rotate(10deg); 
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+
+
+    <div id="box">
+        <div id="varal-bandeirinhas"></div>
+        <div class="logo-container">
+            <div class="grupo-logo">
+            <img src="homem.png" class="icone-caipira icone-esq" alt="Caipira Menino">
+            
+            <img src="dyzo-logo.png" class="logo-circulo" alt="Dyzo Logo">
+            
+            <img src="mulher.png" class="icone-caipira icone-dir" alt="Caipira Menina">
+        </div>
+        
+        <img src="texto_logo.png" class="titulo-imagem" alt="Dyzfarce Elegante">
+        
+        <div class="row">
+            <label>De (Opcional):</label>
+            <input type="text" id="de" placeholder="Nome ou deixe em branco">
+        </div>
+
+        <div class="row">
+            <label>Para:</label>
+            <input type="text" id="para" placeholder="Nome do alvo">
+        </div>
+
+        <div class="row">
+            <label>Estilo:</label>
+            <select id="tom">
+                <option value="fofo">Fofo 🥰</option>
+                <option value="engracado">Engraçado 😂</option>
+                <option value="caipira">Caipira 🤠</option>
+                <option value="ousado">Ousado 😏</option>
+            </select>
+        </div>
+
+        <button id="btn">Enviar Correio</button>
+
+        <a href="https://www.instagram.com/festadyzo?igsh=ejJ5ZG1sN3cwNTF1" target="_blank" class="btn-insta">
+            📸 Visite a @festadyzo
+        </a>
+        
+        <p id="res"></p>
+    </div>
+
+    <div id="pop">
+        <div class="crt">
+            <span class="x" id="fechar">✖</span>
+            <h3 class="tit">💌 Correio Elegante</h3>
+            <div id="msg"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- FUNÇÃO RESPONSIVA PARA ESPALHAR OS EMOJIS ---
+        function espalharDecoracoes() {
+            const decoracoes = ["🔥", "🌽", "🍿", "🎏", "🪁"]; 
+            const numDecoracoes = 24; 
+            
+            const larguraTela = window.innerWidth;
+            const larguraBox = larguraTela > 450 ? 400 : larguraTela * 0.92;
+            const calhaLado = (larguraTela - larguraBox) / 2;
+
+            for (let i = 0; i < numDecoracoes; i++) {
+                const emoji = decoracoes[Math.floor(Math.random() * decoracoes.length)];
+                const decorElement = document.createElement("span");
+                decorElement.classList.add("decoracao");
+                decorElement.innerText = emoji;
+
+                let top = 5 + Math.random() * 90; 
+                let left;
+
+                if (i % 2 === 0) {
+                    left = Math.random() * (calhaLado + (larguraTela > 450 ? -30 : 5));
+                } else {
+                    // LADO DIREITO: Restrito ao vão direito da tela
+                    const inicioDireita = larguraTela - calhaLado - (larguraTela > 450 ? 0 : 15);
+                    left = inicioDireita + Math.random() * (calhaLado - 15);
+                }
+
+                decorElement.style.top = top + "%";
+                decorElement.style.left = Math.max(0, left) + "px"; // Aplicação em pixels reais
+
+                const size = larguraTela > 450 ? (25 + Math.random() * 20) : (16 + Math.random() * 10); 
+                const rot = (Math.random() - 0.5) * 60; 
+                
+                decorElement.style.fontSize = size + "px";
+                decorElement.style.transform = `rotate(${rot}deg) scale(0)`; 
+
+                document.body.appendChild(decorElement);
+
+                setTimeout(() => {
+                    decorElement.style.transform = `rotate(${rot}deg) scale(1)`;
+                }, 10 + i * 20); 
+            }
+        }
+
+        
+        window.addEventListener('load', () => {
+            espalharDecoracoes();
+            espalharRetalhos();
+            gerarBandeirinhasTopo();
+        });
+
+
+        // --- LÓGICA DO CORREIO ELEGANTE (já existente) ---
+        document.getElementById('fechar').onclick = function() {
+            document.getElementById('pop').style.display = 'none';
+        };
+
+        document.getElementById('btn').onclick = async function() {
+            let de = document.getElementById('de').value || "Anônimo";
+            let para = document.getElementById('para').value;
+            let tom = document.getElementById('tom').value;
+            
+            if(!para) {
+                alert("Opa, faltou dizer pra quem é sô!");
+                return;
+            }
+
+            document.getElementById('res').innerText = "Escrevendo no capricho...";
+            
+            try {
+                let resposta = await fetch('/api/correio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ de: de, para: para, tom: tom })
+                });
+
+                let dados = await resposta.json();
+                
+                document.getElementById('res').innerText = ""; 
+                document.getElementById('msg').innerText = dados.mensagem;
+                document.getElementById('pop').style.display = 'flex';
+                
+            } catch (erro) {
+                document.getElementById('res').innerText = "Vixe, a IA tropeçou na quadrilha. Tente de novo!";
+            }
+        }
+        // --- FUNÇÃO PARA GERAR A COLCHA DE RETALHOS NO FUNDO ---
+        function espalharRetalhos() {
+            const box = document.getElementById("box");
+            if (!box) return;
+
+            const paleta = ["#F20C0C", "#8C0303", "#F272C5", "#D989A6", "#F24B6A"];
+            const texturas = ["textura-solid", "textura-xadrez", "textura-listrada", "textura-poa"];
+            const qteRetalhos = 22;
+
+            for (let i = 0; i < qteRetalhos; i++) {
+                const retalho = document.createElement("div");
+                retalho.classList.add("retalho");
+
+                const cor = paleta[Math.floor(Math.random() * paleta.length)];
+                const textura = texturas[Math.floor(Math.random() * texturas.length)];
+                
+                retalho.style.backgroundColor = cor;
+                if (textura !== "textura-solid") {
+                    retalho.classList.add(textura);
+                }
+
+                const largura = 45 + Math.random() * 40;
+                const altura = 45 + Math.random() * 40;
+                retalho.style.width = largura + "px";
+                retalho.style.height = altura + "px";
+
+                retalho.style.top = (5 + Math.random() * 85) + "%";
+                retalho.style.left = (5 + Math.random() * 85) + "%";
+
+                const rotacao = (Math.random() - 0.5) * 45; 
+                retalho.style.setProperty('--rot-inicial', rotacao + 'deg');
+                retalho.style.animationDelay = (Math.random() * -5) + "s"; 
+
+                box.appendChild(retalho);
+            }
+        }
+
+        // --- FUNÇÃO PARA GERAR AS BANDEIRINHAS DO TOPO (ATUALIZADA) ---
+        function gerarBandeirinhasTopo() {
+            const varal = document.getElementById("varal-bandeirinhas");
+            if (!varal) return;
+
+            varal.innerHTML = '';
+
+            const paleta = ["#F20C0C", "#8C0303", "#F272C5", "#D989A6", "#F24B6A"];
+            
+            const larguraBox = varal.offsetWidth;
+            
+            const larguraBandeirinha = 32; 
+            const totalBandeirinhas = Math.ceil(larguraBox / larguraBandeirinha);
+
+            for (let i = 0; i < totalBandeirinhas; i++) {
+                const bandeirinha = document.createElement("div");
+                bandeirinha.classList.add("bandeirinha-topo");
+
+                const cor = paleta[i % paleta.length];
+                bandeirinha.style.backgroundColor = cor;
+
+                varal.appendChild(bandeirinha);
+            }
+        }
+    </script>
+
+</body>
+</html>
