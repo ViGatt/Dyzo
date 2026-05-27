@@ -31,7 +31,7 @@ app.post('/api/correio', async (req, res) => {
                 "X-Title": "Dyzo Elegante"
             },
             body: JSON.stringify({
-                model: "google/gemini-1.5-flash:free",
+                model: "openrouter/free",
                 messages: [
                     { role: "user", content: prompt }
                 ],
