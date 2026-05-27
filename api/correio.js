@@ -6,10 +6,35 @@ app.use(express.json());
 
 const apiKey = process.env.MINHA_CHAVE_IA;
 
+// --- PLANO DE CONTINGÊNCIA (FALLBACK) ---
+// Se a IA gratuita congestionar no pico da festa, o sistema sorteia uma dessas.
+const frasesDeEmergencia = {
+    fofo: [
+        "[PARA], o(a) [DE] mandou avisar que o sorriso seu é mais doce que maçã do amor!",
+        "Atenção [PARA]: você é a fogueira que aquece o coração do(a) [DE] nessa festa.",
+        "[PARA], se beleza fosse flor, você seria o jardim inteiro do(a) [DE]! 🥰"
+    ],
+    engracado: [
+        "[PARA], o(a) [DE] não é barraca do beijo, mas tá aceitando negócio!",
+        "Avisa o(a) [PARA] que o(a) [DE] disse que você é o milho que faltava na pamonha dele(a)!",
+        "[PARA], o(a) [DE] quer saber se você é fogueira, porque ele(a) tá derretendo por você! 😂"
+    ],
+    caipira: [
+        "Ô [PARA], o(a) [DE] mandou avisar que o coração dele(a) pula por ocê que nem pipoca na panela!",
+        "Êta trem bão! O(a) [DE] tá arrastando a asa pro ce, [PARA]! 🤠",
+        "[PARA], o(a) [DE] disse que ocê é mais cobiçado(a) que o prêmio do bingo!"
+    ],
+    ousado: [
+        "[PARA], o(a) [DE] quer saber se tem espaço pra ele(a) pular a fogueira do seu coração. 😏",
+        "A festa tá boa, [PARA], mas o(a) [DE] quer saber que horas a boca de vocês vai se encontrar.",
+        "[PARA], o(a) [DE] mandou o correio, mas o que ele(a) quer mesmo é te entregar um beijo."
+    ]
+};
+
 app.post('/api/correio', async (req, res) => {
-    let de = req.body.de;
+    let de = req.body.de || "Alguém secreto";
     let para = req.body.para;
-    let tom = req.body.tom;
+    let tom = req.body.tom || "fofo";
 
     let prompt = `Você é um cupido de festa junina extremamente criativo, imprevisível e original. 
     Crie um correio elegante bem curto (máximo 2 linhas) de ${de} para ${para}. 
@@ -22,39 +47,46 @@ app.post('/api/correio', async (req, res) => {
     - Responda apenas com a mensagem final, sem aspas ou introduções.`;
 
     try {
+        // Tenta a sorte com a IA gratuita
         const respostaOpenRouter = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://festadyzo.com", // Ajuda a evitar bloqueios
+                "HTTP-Referer": "https://festadyzo.com",
                 "X-Title": "Dyzo Elegante"
             },
             body: JSON.stringify({
-                model: "openrouter/free",
-                messages: [
-                    { role: "user", content: prompt }
-                ],
+                model: "openrouter/free", 
+                messages: [{ role: "user", content: prompt }],
                 temperature: 0.9
             })
         });
 
         const dados = await respostaOpenRouter.json();
 
-        // SE O OPENROUTER NEGAR, VAMOS MANDAR O ERRO REAL PARA A TELA DO CELULAR
-        if (!respostaOpenRouter.ok) {
-            console.error("Erro OpenRouter:", dados);
-            // Captura o erro exato (ex: 401 Unauthorized, 429 Rate Limit)
-            const erroReal = dados.error?.message || `Erro código ${respostaOpenRouter.status}`;
-            return res.status(500).json({ erro: `ERRO DO OPENROUTER: ${erroReal}` });
+        // Se o OpenRouter der erro ou congestionar, nós mesmos forçamos o erro para cair no "catch"
+        if (!respostaOpenRouter.ok || !dados.choices) {
+            throw new Error("Servidor da IA ocupado");
         }
 
         const textoGerado = dados.choices[0].message.content.trim();
         res.json({ mensagem: textoGerado });
         
     } catch (erro) {
-        console.error("Erro no servidor da Vercel:", erro);
-        res.status(500).json({ erro: "Erro interno do servidor Node.js. Verifique os logs da Vercel." });
+        console.warn("IA congestionada. Acionando Plano B (Fallback) para não travar o usuário...");
+        
+        // 1. Pega a lista de frases do tom que a pessoa escolheu (ou cai no fofo se der erro)
+        const listaFrases = frasesDeEmergencia[tom] || frasesDeEmergencia.fofo;
+        
+        // 2. Sorteia uma frase aleatória dessa lista
+        const fraseSorteada = listaFrases[Math.floor(Math.random() * listaFrases.length)];
+        
+        // 3. Substitui as tags [DE] e [PARA] pelos nomes digitados
+        const mensagemFinal = fraseSorteada.replace("[DE]", de).replace("[PARA]", para);
+        
+        // 4. Devolve para o celular como se tivesse sido a IA que pensou!
+        res.json({ mensagem: mensagemFinal });
     }
 });
 
