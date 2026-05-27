@@ -42,7 +42,12 @@ app.post('/api/correio', async (req, res) => {
         res.status(500).json({ erro: "Eita, deu problema na fogueira!" });
     }
 });
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Correio elegante rodando na porta ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Correio elegante rodando na porta ${PORT}`);
+    });
+}
+
+// A linha que a Vercel precisa para ler o seu backend
+module.exports = app;
