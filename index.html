@@ -212,28 +212,68 @@
             z-index: 9999; 
         }
 
-        /* --- CARTINHA DE DOWNLOAD --- */
+        /* --- O ENVELOPE EXTERNO (Borda Colorida) --- */
         .crt {
-            background: #ffc6b3; 
-            padding: 30px 20px;
-            width: 88%; 
-            max-width: 330px;
-            border-radius: 10px;
-            border: 3px dashed #ff1500;
-            box-shadow: 5px 10px 30px rgba(0,0,0,0.5);
+            /* Borda estilo correio aéreo com a paleta da Dyzo */
+            background: repeating-linear-gradient(
+                -45deg,
+                #DF4C52,
+                #DF4C52 15px,
+                #fff 15px,
+                #fff 30px,
+                #F272C5 30px,
+                #F272C5 45px,
+                #fff 45px,
+                #fff 60px
+            );
+            padding: 12px; /* Espessura da borda do envelope */
+            width: 90%; 
+            max-width: 360px;
+            border-radius: 12px;
+            box-shadow: 5px 15px 35px rgba(0,0,0,0.5);
             transform: rotate(-1deg); 
             position: relative;
             text-align: center;
             box-sizing: border-box; 
         }
 
-        .x {
-            position: absolute; top: 10px; right: 15px;
-            cursor: pointer; font-size: 24px; font-weight: bold; color: #d81515;
-            padding: 5px; 
+        /* --- O PAPEL INTERNO (Onde o texto fica) --- */
+        .papel-carta {
+            background-color: #fff8e1; /* Fundo creme */
+            /* Efeito de linhas de caderno vermelho bem clarinho */
+            background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(223, 76, 82, 0.15) 28px, rgba(223, 76, 82, 0.15) 30px);
+            padding: 40px 20px 20px 20px;
+            border-radius: 6px;
+            border: 2px dashed #DF4C52;
+            position: relative;
         }
 
-        .tit { color: #d81515; font-size: 20px; margin-top: 0; margin-bottom: 25px; text-transform: uppercase;}
+        /* --- DETALHE DO SELO --- */
+        .selo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 35px;
+            transform: rotate(15deg);
+            opacity: 0.9;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+            pointer-events: none;
+        }
+
+        /* Ajuste no botão "X" para ficar circular e saltado para fora do envelope */
+        .x {
+            position: absolute; 
+            top: -12px; right: -12px; 
+            cursor: pointer; font-size: 18px; font-weight: bold; color: white;
+            background: #d81515;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+
+        .tit { color: #d81515; font-size: 20px; margin-top: 0; margin-bottom: 25px; text-transform: uppercase; background: #fff8e1; display: inline-block; padding: 0 10px;}
 
         #msg {
             font-family: 'Courier New', Courier, monospace; 
@@ -310,12 +350,16 @@
     <div id="pop">
         <div class="crt" id="cartinha-download">
             <span class="x" id="fechar">✖</span>
-            <h3 class="tit">💌 Correio Elegante</h3>
-            <div id="msg"></div>
             
-            <div class="area-botoes-pop">
-                <button class="btn-pop btn-fechar-pop" id="fechar-btn-pop">Fechar</button>
-                <button class="btn-pop btn-baixar-pop" id="baixar">Baixar Cartinha 📸</button>
+            <div class="papel-carta">
+                <div class="selo">💘</div>
+                <h3 class="tit">💌 Correio Elegante</h3>
+                <div id="msg"></div>
+                
+                <div class="area-botoes-pop">
+                    <button class="btn-pop btn-fechar-pop" id="fechar-btn-pop">Fechar</button>
+                    <button class="btn-pop btn-baixar-pop" id="baixar">Baixar Cartinha 📸</button>
+                </div>
             </div>
         </div>
     </div>
@@ -477,15 +521,21 @@
         document.getElementById('baixar').onclick = function() {
             const areaDownload = document.getElementById('cartinha-download');
             
+            // Esconde a área de botões inteira (some com o buraco) e deixa o X invisível
             const botoesArea = areaDownload.querySelector('.area-botoes-pop');
-            botoesArea.style.opacity = '0'; 
+            const botaoX = areaDownload.querySelector('.x');
+            
+            botoesArea.style.display = 'none'; 
+            botaoX.style.opacity = '0'; 
 
             html2canvas(areaDownload, {
-                backgroundColor: "#fff8e1", 
+                backgroundColor: null, // Deixa o fundo atrás do envelope transparente
                 scale: 2, 
                 useCORS: true 
             }).then(canvas => {
-                botoesArea.style.opacity = '1';
+                // Restaura os botões e o X pra pessoa poder fechar
+                botoesArea.style.display = 'flex';
+                botaoX.style.opacity = '1';
 
                 const imgData = canvas.toDataURL("image/png");
                 
