@@ -82,8 +82,12 @@
             margin: 0 auto 20px auto; 
         }
         
+        /* --- O BOX PRINCIPAL COM TEXTURA DE LINHO --- */
         #box { 
-            background: #fef3d9;
+            background-color: #fff8e1;
+            background-image: linear-gradient(90deg, rgba(140, 3, 3, 0.03) 1px, transparent 1px),
+                              linear-gradient(rgba(140, 3, 3, 0.03) 1px, transparent 1px);
+            background-size: 10px 10px;
             padding: 20px; 
             border-radius: 15px; 
             width: 92%;
@@ -94,6 +98,66 @@
             position: relative; 
             z-index: 20;
             margin-bottom: 30px;
+            overflow: hidden; /* Essencial para as bandeirinhas e retalhos não vazarem */
+        }
+
+        /* Mantém o conteúdo legível acima dos retalhos */
+        #box > *:not(.retalho):not(#varal-bandeirinhas) {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- VARAL DE BANDEIRINHAS NO TOPO --- */
+        #varal-bandeirinhas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 38px;
+            display: flex;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .bandeirinha-topo {
+            flex: 1;
+            height: 100%;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            filter: brightness(0.95); 
+        }
+
+        /* --- RETALHOS DE FUNDO DO BOX --- */
+        .retalho {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            border: 1.8px dashed rgba(255, 255, 255, 0.85); 
+            filter: drop-shadow(2px 3px 3px rgba(0, 0, 0, 0.15));
+            border-radius: 4px;
+            opacity: 0.38; 
+            animation: balancarRetalho 6s ease-in-out infinite alternate;
+        }
+
+        .textura-xadrez {
+            background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.12) 50%, transparent 50%),
+                              linear-gradient(rgba(0, 0, 0, 0.12) 50%, transparent 50%);
+            background-size: 16px 16px;
+        }
+
+        .textura-listrada {
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent);
+            background-size: 12px 12px;
+        }
+
+        .textura-poa {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.4) 20%, transparent 21%);
+            background-size: 12px 12px;
+        }
+
+        @keyframes balancarRetalho {
+            0% { transform: translate(0, 0) rotate(var(--rot-inicial)); }
+            100% { transform: translate(4px, -3px) rotate(calc(var(--rot-inicial) + 4deg)); }
         }
         
         h2 { color: #DF4C52; font-size: 26px; margin-top: 5px; text-transform: uppercase;}
@@ -134,25 +198,25 @@
 
         #res { margin-top: 20px; font-weight: bold; color: #9C1D26; }
 
-        /* --- AJUSTE: CORREÇÃO DO POP-UP (OVERLAY) --- */
+        /* --- POP-UP OVERLAY --- */
         #pop {
-            display: none; /* Começa escondido */
+            display: none; 
             position: fixed; 
             top: 0; left: 0; 
             width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.6); /* Fundo mais escuro */
-            backdrop-filter: blur(5px); /* Efeito de desfoque de fundo */
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(5px); 
             -webkit-backdrop-filter: blur(5px); 
             align-items: center; 
             justify-content: center;
-            z-index: 9999; /* Z-INDEX ALTÍSSIMO: Força a ficar na frente de tudo */
+            z-index: 9999; 
         }
 
-        /* --- AJUSTE: CORREÇÃO DA CARTINHA (CARTA) --- */
+        /* --- CARTINHA DE DOWNLOAD --- */
         .crt {
             background: #ffc6b3; 
             padding: 30px 20px;
-            width: 88%; /* Mais larga no mobile */
+            width: 88%; 
             max-width: 330px;
             border-radius: 10px;
             border: 3px dashed #ff1500;
@@ -160,13 +224,13 @@
             transform: rotate(-1deg); 
             position: relative;
             text-align: center;
-            box-sizing: border-box; /* Garante que padding não quebre a largura */
+            box-sizing: border-box; 
         }
 
         .x {
             position: absolute; top: 10px; right: 15px;
             cursor: pointer; font-size: 24px; font-weight: bold; color: #d81515;
-            padding: 5px; /* Maior área de clique no celular */
+            padding: 5px; 
         }
 
         .tit { color: #d81515; font-size: 20px; margin-top: 0; margin-bottom: 25px; text-transform: uppercase;}
@@ -178,7 +242,6 @@
             margin-bottom: 25px;
         }
 
-        /* --- NOVO: ESTILO PARA OS BOTÕES DO POP-UP --- */
         .area-botoes-pop {
             display: flex;
             gap: 10px;
@@ -195,22 +258,16 @@
             font-size: 15px;
         }
 
-        .btn-fechar-pop {
-            background-color: #ddd;
-            color: #333;
-        }
-
-        .btn-baixar-pop {
-            background-color: #DF4C52;
-            color: white;
-            box-shadow: 0 3px 0 #b33e42;
-        }
+        .btn-fechar-pop { background-color: #ddd; color: #333; }
+        .btn-baixar-pop { background-color: #DF4C52; color: white; box-shadow: 0 3px 0 #b33e42; }
 
     </style>
 </head>
 <body>
 
     <div id="box">
+        <div id="varal-bandeirinhas"></div>
+
         <div class="logo-container">
             <div class="grupo-logo">
                 <img src="homem.png" class="icone-caipira icone-esq" alt="Caipira Menino">
@@ -264,7 +321,7 @@
     </div>
 
     <script>
-        // --- FUNÇÃO RESPONSIVA PARA ESPALHAR OS EMOJIS (Melhorado Mobile) ---
+        // --- 1. FUNÇÃO RESPONSIVA EMOJIS LATERAIS ---
         function espalharDecoracoes() {
             const decoracoes = ["🔥", "🌽", "🍿", "🎏", "🪁"]; 
             const numDecoracoes = 24; 
@@ -306,8 +363,73 @@
             }
         }
 
-        // --- INICIALIZAÇÃO ---
-        window.addEventListener('load', espalharDecoracoes);
+        // --- 2. FUNÇÃO BANDEIRINHAS (RESTORED) ---
+        function gerarBandeirinhasTopo() {
+            const varal = document.getElementById("varal-bandeirinhas");
+            if (!varal) return;
+
+            varal.innerHTML = '';
+            const paleta = ["#F20C0C", "#8C0303", "#F272C5", "#D989A6", "#F24B6A"];
+            
+            const larguraBox = varal.offsetWidth;
+            const larguraBandeirinha = 32; 
+            const totalBandeirinhas = Math.ceil(larguraBox / larguraBandeirinha);
+
+            for (let i = 0; i < totalBandeirinhas; i++) {
+                const bandeirinha = document.createElement("div");
+                bandeirinha.classList.add("bandeirinha-topo");
+                const cor = paleta[i % paleta.length];
+                bandeirinha.style.backgroundColor = cor;
+                varal.appendChild(bandeirinha);
+            }
+        }
+
+        // --- 3. FUNÇÃO RETALHOS DE FUNDO (RESTORED) ---
+        function espalharRetalhos() {
+            const box = document.getElementById("box");
+            if (!box) return;
+
+            const paleta = ["#F20C0C", "#8C0303", "#F272C5", "#D989A6", "#F24B6A"];
+            const texturas = ["textura-solid", "textura-xadrez", "textura-listrada", "textura-poa"];
+            const qteRetalhos = 24; 
+
+            for (let i = 0; i < qteRetalhos; i++) {
+                const retalho = document.createElement("div");
+                retalho.classList.add("retalho");
+
+                const cor = paleta[Math.floor(Math.random() * paleta.length)];
+                const textura = texturas[Math.floor(Math.random() * texturas.length)];
+                
+                retalho.style.backgroundColor = cor;
+                if (textura !== "textura-solid") {
+                    retalho.classList.add(textura);
+                }
+
+                const largura = 45 + Math.random() * 40;
+                const altura = 45 + Math.random() * 40;
+                retalho.style.width = largura + "px";
+                retalho.style.height = altura + "px";
+
+                retalho.style.top = (5 + Math.random() * 85) + "%";
+                retalho.style.left = (5 + Math.random() * 85) + "%";
+
+                const rotacao = (Math.random() - 0.5) * 45; 
+                retalho.style.setProperty('--rot-inicial', rotacao + 'deg');
+                retalho.style.animationDelay = (Math.random() * -5) + "s"; 
+
+                box.appendChild(retalho);
+            }
+        }
+
+        // --- INICIALIZAÇÃO GERAL ---
+        window.addEventListener('load', () => {
+            espalharDecoracoes();
+            espalharRetalhos();
+            gerarBandeirinhasTopo();
+        });
+
+        // Atualiza as bandeirinhas caso a pessoa vire o celular
+        window.addEventListener('resize', gerarBandeirinhasTopo);
 
         // --- LÓGICA DO CORREIO ELEGANTE ---
         const pop = document.getElementById('pop');
@@ -329,7 +451,6 @@
             document.getElementById('res').innerText = "Escrevendo no capricho...";
             
             try {
-                // Fetch nativo: Vercel redireciona automaticamente para api/correio.js
                 let resposta = await fetch('/api/correio', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -342,11 +463,8 @@
                     throw new Error(dados.erro);
                 }
 
-                // AJUSTE: Limpa o texto de carregamento
                 document.getElementById('res').innerText = ""; 
-                // AJUSTE: Formata a mensagem final (Para: X \n De: Y)
                 document.getElementById('msg').innerHTML = `Para: <strong>${para}</strong><br>De: <strong>${de}</strong><br><br>${dados.mensagem}`;
-                // AJUSTE: Mostra o Pop-up com FLEX para garantir centralização
                 pop.style.display = 'flex';
                 
             } catch (erro) {
@@ -355,33 +473,28 @@
             }
         }
 
-        // --- NOVO: LÓGICA DE DOWNLOAD DA CARTINHA COMO IMAGEM ---
+        // --- LÓGICA DE DOWNLOAD DA CARTINHA COMO IMAGEM ---
         document.getElementById('baixar').onclick = function() {
             const areaDownload = document.getElementById('cartinha-download');
             
-            // Truque: oculta temporariamente os botões dentro da carta para não saírem na foto
             const botoesArea = areaDownload.querySelector('.area-botoes-pop');
-            botoesArea.style.opacity = '0'; // Usa opacity para não quebrar o layout antes do print
+            botoesArea.style.opacity = '0'; 
 
-            // Chama a biblioteca html2canvas no elemento da carta
             html2canvas(areaDownload, {
-                backgroundColor: "#fff8e1", // Match original background color
-                scale: 2, // Aumenta a qualidade (2x) para mobile
-                useCORS: true // Se houver imagens externas (como a logo se estivesse dentro)
+                backgroundColor: "#fff8e1", 
+                scale: 2, 
+                useCORS: true 
             }).then(canvas => {
-                // Restaura os botões no pop-up
                 botoesArea.style.opacity = '1';
 
-                // Converte o canvas para uma imagem base64
                 const imgData = canvas.toDataURL("image/png");
                 
-                // Cria um link de download temporário e clica nele
                 const link = document.createElement('a');
                 link.href = imgData;
-                link.download = `CorreioElegante_Festadyzo_${Date.now()}.png`; // Nome único
+                link.download = `CorreioElegante_Festadyzo_${Date.now()}.png`; 
                 document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link); // Limpa o link após o download
+                document.body.removeChild(link); 
             });
         };
 
