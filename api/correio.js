@@ -36,18 +36,20 @@ app.post('/api/correio', async (req, res) => {
     let para = req.body.para;
     let tom = req.body.tom || "fofo";
 
-    let prompt = `Você é um cupido caipira de festa junina, extremamente talentoso, criativo e com um dom para rimas e trocadilhos.
-    Sua missão é criar um correio elegante impecável e curto (máximo 2 linhas), enviada por ${de} para ${para}.
-    A mensagem deve ser: ${tom}.
+    let prompt = `Escreva um correio elegante de festa junina.
+    REMETENTE: ${de}
+    DESTINATÁRIO: ${para}
+    TOM DA MENSAGEM: ${tom}
     
-    DIRETRIZES DE CRIAÇÃO (OBRIGATÓRIAS):
-    - SENTIDO POÉTICO: A mensagem deve ser perfeitamente coerente e ter um sentido poético claro. Evite frases absurdas ou desconexas que fiquem sem significado.
-    - COERÊNCIA GRAMATICAL: A frase deve ser gramaticalmente correta, garantindo concordância verbal e nominal.
-    - INTEGRAÇÃO NATURAL DOS NOMES: Os nomes de ${de} e ${para} devem ser integrados de forma natural e suave na rima ou trocadilho, como se fizessem parte da frase original.
-    - EVITE CLICHÊS: Não use frases óbvias ou clássicas (fuja do "você é a fogueira...").
-    - CRIATIVIDADE CAIPIRA: Invente rimas novas, cantadas criativas ou trocadilhos originais que façam sentido dentro do tema de festa junina e do tom escolhido.
+    Crie uma mensagem muito curta (no máximo 2 linhas).
     
-    RESPONDA APENAS COM A MENSAGEM FINAL, SEM ASPAS OU INTRODUÇÕES.`;
+    REGRAS ESTABELECIDAS (OBRIGATÓRIO SEGUIR TODAS):
+    1. DIRECIONAMENTO EXATO: A mensagem DEVE ser escrita em primeira pessoa. O REMETENTE (${de}) está falando diretamente com o DESTINATÁRIO (${para}).
+    2. ZERO CONFUSÃO: Nunca trate o remetente como se fosse o destinatário. O destinatário é o único foco da cantada.
+    3. PROIBIDO REPETIÇÕES: NUNCA repita a mesma palavra para forçar uma rima (ex: não rime "roça" com "roça") e NÃO repita o nome das pessoas duas vezes na mesma frase.
+    4. VOCABULÁRIO LÓGICO: Use elementos naturais de festa junina (fogueira, quentão, milho, pipoca, balão, quadrilha), mas garanta que a frase tenha sentido real no português. Não invente expressões sem nexo.
+    
+    RESPONDA APENAS COM O TEXTO FINAL DA MENSAGEM.`;
 
     try {
         // Tenta a sorte com a IA gratuita
