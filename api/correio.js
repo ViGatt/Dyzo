@@ -36,15 +36,18 @@ app.post('/api/correio', async (req, res) => {
     let para = req.body.para;
     let tom = req.body.tom || "fofo";
 
-    let prompt = `Você é um cupido de festa junina extremamente criativo, imprevisível e original. 
-    Crie um correio elegante bem curto (máximo 2 linhas) de ${de} para ${para}. 
-    O tom da mensagem deve ser: ${tom}. 
+    let prompt = `Você é um cupido caipira de festa junina, extremamente talentoso, criativo e com um dom para rimas e trocadilhos.
+    Sua missão é criar um correio elegante impecável e curto (máximo 2 linhas), enviada por ${de} para ${para}.
+    A mensagem deve ser: ${tom}.
     
-    REGRAS OBRIGATÓRIAS:
-    - Evite frases clichês clássicas (fuja do óbvio).
-    - Invente rimas inusitadas, trocadilhos novos ou cantadas caipiras originais.
-    - Nunca repita a mesma estrutura de texto.
-    - Responda apenas com a mensagem final, sem aspas ou introduções.`;
+    DIRETRIZES DE CRIAÇÃO (OBRIGATÓRIAS):
+    - SENTIDO POÉTICO: A mensagem deve ser perfeitamente coerente e ter um sentido poético claro. Evite frases absurdas ou desconexas que fiquem sem significado.
+    - COERÊNCIA GRAMATICAL: A frase deve ser gramaticalmente correta, garantindo concordância verbal e nominal.
+    - INTEGRAÇÃO NATURAL DOS NOMES: Os nomes de ${de} e ${para} devem ser integrados de forma natural e suave na rima ou trocadilho, como se fizessem parte da frase original.
+    - EVITE CLICHÊS: Não use frases óbvias ou clássicas (fuja do "você é a fogueira...").
+    - CRIATIVIDADE CAIPIRA: Invente rimas novas, cantadas criativas ou trocadilhos originais que façam sentido dentro do tema de festa junina e do tom escolhido.
+    
+    RESPONDA APENAS COM A MENSAGEM FINAL, SEM ASPAS OU INTRODUÇÕES.`;
 
     try {
         // Tenta a sorte com a IA gratuita
